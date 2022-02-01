@@ -145,23 +145,30 @@ class Rest_model extends CI_Model {
 			}
 			$validation = $this->guardar_codigo($correo, $IdUsuario, $codigo);
 			if( $validation){
-				return array( "success" => true, "message" => 'Código creado correctamente.', 'data' => array('Codigo'=>$codigo) );
+				$correo_remitente = $this->obtenerCorreo();
+				return array( "success" => true, "message" => 'Código creado correctamente.', 'data' => array('Codigo'=>$codigo, 'Correo_Remitente' => $correo_remitente) );
 			}else{
 				return array( "success" => false, "message" => "Ocurrió un error al guarda el código.", 'data' => array());
 			}
 		}else{
 			return array( "success" => false, "message" => "No hay usuarios registrados con ese correo.", 'data' => array());
 		}
-		$validation = $this->generar_codigo($correo);
+	}
 
-		if( $validation){
-			$IdUsuario = $this->obtenerIdUsuarioCorreo($correo);
-			$resoibse
-			$datos['IdUsuario'] = $IdUsuario;
-			return array( "success" => true, "message" => 'Usuario creado correctamente.', 'data' => $datos);
+	function obtenerCorreo(){
+		$correo = '';
+		$sql = "select * from Configuracion where Status=1 limit 1;";
+		$query = $this->db->query($sql);
+		
+		if ( $query->num_rows() < 1) {
+			return $correo;
 		}
-
-		return array( "success" => false, "message" => "Ocurrió un error, por favor valide sus datos.", 'data' => $datos);
+		
+		$row = $query->row();
+		if($row->Correo != NULL){
+			$correo = $row->Correo;
+		}
+		return $correo;
 	}
 
 	function obtenerIdUsuarioCorreo($correo){
