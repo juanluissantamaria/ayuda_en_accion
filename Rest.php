@@ -565,27 +565,20 @@ class Rest extends REST_Controller {
             if($respuesta['success']){
                 $cuerpo = "<h1>Ayuda en Acción</h1>";
                 $cuerpo .= "<br/>";
-                $cuerpo .= "<p>Tu código de verificación es ".$respuesta['datos']['Codigo']." , ingresalo en la app para validar tu correo.</p>";
+                $cuerpo .= "<p>Tu código de verificación es ".$respuesta['data']['Codigo']." , ingresalo en la app para validar tu correo.</p>";
                 //mando el correo...
                 $success = mail($correo, 'Ayuda en Acción', $cuerpo, "MIME-Version: 1.0\nContent-type: text/html; charset=UTF-8\nFrom: Mensaje de: https://ayudaenaccion.detecsa-consultores.com");
                 
                 if (!$success) {
-                    $this->response(array( "success" => false, "message" => "No se envio el correo." , "data"=> array()));
+                    $this->response( array( "success" => false, "message" => "No se envio el correo." , "data"=> array()) );
                 } else {
-                    return array( "success" => true, "message" => 'Código enviado correctamente.', 'data' => array() );
+                    $this->response( array( "success" => true, "message" => 'Código enviado correctamente.', 'data' => array()) );
                 }
             }else{
                 $this->response( $respuesta );
             }
         }else{
             $this->response(array( "success" => false, "message" => "El correo no es valido." , "data"=> array()));
-        }
-
-        if($idUsuarioPodcast > 0){
-            $respuesta = $this->rest_model->obtener_usuario($idUsuarioPodcast);
-            $this->response( $respuesta );            
-        } else{
-            $this->response(array( "success" => false, "message" => "No has indicado el usuario" , "data"=> array()));
         }
     }
 

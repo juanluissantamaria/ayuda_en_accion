@@ -104,7 +104,7 @@ class Rest_model extends CI_Model {
 	function valida_codigo($codigo, $idUsuario, $correo){
 		$sql = "SELECT COUNT(*) as cuenta
         	FROM Codigos	
-			WHERE Status=1 AND IdUsuario=$idUsuario AND Correo = '$correo';";
+			WHERE Status=1 AND Codigo = '$codigo' AND IdUsuario=$idUsuario AND Correo = '$correo';";
 		$query = $this->db->query($sql);
 		$row = $query->row();
 		if($row && $row->cuenta != NULL && $row->cuenta > 0){
@@ -121,7 +121,7 @@ class Rest_model extends CI_Model {
 			"Correo" => $correo,
 			"Status" => 1,
 			"IdUsuarioModifico" => 1,
-			"FechaModifico" => date('Y-m-d H:i:s'))
+			"FechaModifico" => date('Y-m-d H:i:s')
 		);
 
 		$validation = $this->db->insert('Codigos', $datos);
@@ -139,9 +139,9 @@ class Rest_model extends CI_Model {
 	function crear_codigo($correo){
 		$IdUsuario = $this->obtenerIdUsuarioCorreo($correo);
 		if($IdUsuario > 0){
-			$codigo = generarCodigo(6);
-			while (!valida_codigo($codigo, $idUsuario, $correo)) {
-				$codigo = generarCodigo(6);
+			$codigo = $this->generarCodigo(6);
+			while (!$this->valida_codigo($codigo, $IdUsuario, $correo)) {
+				$codigo = $this->generarCodigo(6);
 			}
 			$validation = $this->guardar_codigo($correo, $IdUsuario, $codigo);
 			if( $validation){
