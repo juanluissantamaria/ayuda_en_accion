@@ -567,7 +567,7 @@ class Rest extends REST_Controller {
                 $cuerpo .= "<br/>";
                 $cuerpo .= "<p>Tu código de verificación es ".$respuesta['data']['Codigo']." , ingresalo en la app para validar tu correo.</p>";
                 //mando el correo...
-                $success = mail($correo, 'Ayuda en Acción', $cuerpo, "MIME-Version: 1.0\nContent-type: text/html; charset=UTF-8\nFrom: Mensaje de: https://ayudaenaccion.detecsa-consultores.com");
+                $success = mail($correo, 'Ayuda en Acción', $cuerpo, "MIME-Version: 1.0\nContent-type: text/html; charset=UTF-8\nFrom: Mensaje de: www.ayudaenaccion.detecsa-consultores.com");
                 
                 if (!$success) {
                     $this->response( array( "success" => false, "message" => "No se envio el correo." , "data"=> array()) );
@@ -579,6 +579,24 @@ class Rest extends REST_Controller {
             }
         }else{
             $this->response(array( "success" => false, "message" => "El correo no es valido." , "data"=> array()));
+        }
+    }
+
+    function valida_codigo_correo_post(){
+        $codigo = $this->input->post("Codigo");
+        if($codigo && strlen($codigo) == 6){
+            $respuesta = $this->rest_model->validar_codigo($codigo);
+            $this->response( $respuesta );
+        }else{
+            $mensaje = '';
+            if($codigo == ''){
+                $mensaje = 'No has especificado el código';
+            }else if ( strlen($codigo) < 6 || strlen($codigo) > 6 ) {
+                $mensaje = 'El código debe ser de 6 caracteres.';
+            }else{
+                $mensaje = 'Código no valido.';
+            }
+            $this->response(array( "success" => false, "message" => $mensaje , "data"=> array()));
         }
     }
 

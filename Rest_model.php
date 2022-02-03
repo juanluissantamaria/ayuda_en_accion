@@ -155,6 +155,26 @@ class Rest_model extends CI_Model {
 		}
 	}
 
+	function validar_codigo($codigo){
+		$sql = "SELECT COUNT(*) as cuenta, IdCodigo
+        	FROM Codigos	
+			WHERE Status=1 AND Codigo = '$codigo';";
+		$query = $this->db->query($sql);
+		$row = $query->row();
+		if($row && $row->cuenta != NULL && $row->cuenta > 0){
+			$datos = array('Status' => 0);
+			$this->db->where('IdCodigo', $row->IdCodigo);
+        	$validation =  $this->db->update('Codigos', $datos);
+        	if($validation){
+				return array( "success" => true, "message" => 'Código correcto.', 'data' => array() );
+        	}else{
+        		return array( "success" => true, "message" => 'Código correcto, pero no se desactivo el código.', 'data' => array() );
+        	}
+		}else{
+			return array( "success" => false, "message" => "Código incorrecto.", 'data' => array());
+		}
+	}
+
 	function obtenerCorreo(){
 		$correo = '';
 		$sql = "select * from Configuracion where Status=1 limit 1;";
